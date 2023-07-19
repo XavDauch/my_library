@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<?php
+include __DIR__.'/../My-library/header.php';
+include "db_connect.php"
+?>
 <html>
     <head>
         <title>Ma Bibliothèque</title>

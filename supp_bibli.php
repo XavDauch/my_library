@@ -1,108 +1,86 @@
 <!DOCTYPE html>
-<html>
+<?php
+include "header.php";
+include "db_connect.php";
+?>
+<html lang="en">
+
 <head>
-    <title>Supprimer une bibliothèque</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyLibrary</title>
+
 </head>
+
 <body>
-    <h2>Supprimer une bibliothèque</h2>
-    <form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
-        <label for="name">Nom :</label>
-        <select name="name" id="name" required>
-            <option value="">Sélectionnez une bibliothèque</option>
-            <?php
-            $conn = mysqli_connect("localhost", "root", "", "mylibrary");
-            if (!$conn) {
-                die("Échec de la connexion à la base de données: " . mysqli_connect_error());
-            }
+<h1>Plaisir de lire</h1>
+<?php
+$query = "SELECT * FROM library";
+$stmt = $pdo->query($query);
+$libraries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $sql = "SELECT name, address, location FROM library ORDER BY name ASC";
-            $result = mysqli_query($conn, $sql);
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["library_id"])) {
+    $libraryId = $_POST["library_id"];
 
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $name = $row["name"];
-                    $address = $row["address"];
-                    $location = $row["location"];
-                    echo "<option value=\"$name\">$name</option>";
-                }
-            }
+    // Requête pour obtenir les informations complètes de la bibliothèque sélectionnée
+    $query = "SELECT * FROM library WHERE id = :library_id";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':library_id', $libraryId, PDO::PARAM_INT);
+    $stmt->execute();
+    $selectedLibrary = $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
-            mysqli_close($conn);
-            ?>
-        </select><br><br>
-        <input type="submit" value="Supprimer la bibliothèque">
-    </form>
+?>
 
-    <?php
-    // Vérifier si le formulaire a été soumis
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $name = $_POST["name"];
+<form action="" method="post">
+    <label for="library_select">Sélectionner une bibliothèque à afficher :</label>
+    <select name="library_id" id="library_select">
+        <?php foreach ($libraries as $library) : ?>
+            <option value="<?= $library["id"] ?>"><?= $library["name"] ?></option>
+        <?php endforeach; ?>
+    </select>
+    <input type="submit" value="Afficher">
+</form>
 
-        // Récupérer les informations de la bibliothèque
-        $conn = mysqli_connect("localhost", "root", "", "mylibrary");
-        if (!$conn) {
-            die("Échec de la connexion à la base de données: " . mysqli_connect_error());
-        }
+<?php
 
-        $selectSql = "SELECT name, address, location FROM library WHERE name = '$name'";
-        $result = mysqli_query($conn, $selectSql);
+if (isset($selectedLibrary)) {
+    echo "<div class='library-container'>";
+    echo "<div class='library-info'>";
+    echo "<span class='label'>Nom:</span>";
+    echo "<p>" . $selectedLibrary["name"] . "</p>";
+    echo "</div>";
 
-        if (mysqli_num_rows($result) > 0) {
-            $row = mysqli_fetch_assoc($result);
-            $address = $row["address"];
-            $location = $row["location"];
+    echo "<div class='library-info'>";
+    echo "<span class='label'>Adresse:</span>";
+    echo "<div class='address-box'>";
+    echo "<p>" . $selectedLibrary["address"] . "</p>";
+    echo "</div>";
+    echo "</div>";
 
-            // Afficher le message de confirmation
-            echo "<p>Voulez-vous vraiment supprimer la bibliothèque suivante ?</p>";
-            echo "<p><strong>Nom :</strong> $name</p>";
-            echo "<p><strong>Adresse :</strong> $address</p>";
-            echo "<p><strong>Emplacement :</strong> $location</p>";
+    echo "<div class='library-info'>";
+    echo "<span class='label'>Code postal:</span>";
+    echo "<p>" . $selectedLibrary["location"] . "</p>";
+    echo "</div>";
 
-            // Formulaire de confirmation
-            echo "<form method=\"post\" action=\"{$_SERVER["PHP_SELF"]}\">";
-            echo "<input type=\"hidden\" name=\"name\" value=\"$name\">";
-            echo "<input type=\"hidden\" name=\"confirm\" value=\"1\">";
-            echo "<input type=\"submit\" value=\"Confirmer la suppression\">";
-            echo "</form>";
-           
-        } else {
-            $erreur = "La bibliothèque \"$name\" n'a pas été trouvée.";
-        }
+    echo "<div class='library-info'>";
+    echo "<span class='label'>Accès PMR:</span>";
+    echo "<p class='pmr-access'>" . ($selectedLibrary["pmr_access"] == 1 ? "Oui" : "Non") . "</p>";
+    echo "</div>";
 
-        mysqli_close($conn);
-    }
+    echo "</div>"; // Fin du conteneur de la bibliothèque
 
-    // Vérifier si le formulaire de confirmation a été soumis
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["confirm"])) {
-        $name = $_POST["name"];
+    echo "<hr>";
 
-        // Supprimer la bibliothèque de la base de données
-        $conn = mysqli_connect("localhost", "root", "", "mylibrary");
-        if (!$conn) {
-            die("Échec de la connexion à la base de données: " . mysqli_connect_error());
-        }
+    // Formulaire de suppression avec confirmation
+    echo "<form action='' method='post'>";
+    echo "<input type='hidden' name='library_id' value='" . $selectedLibrary["id"] . "'>";
+    echo "<input type='submit' value='Supprimer' onclick='return confirm(\"Êtes-vous sûr de vouloir supprimer cette bibliothèque ?\")'>";
+    echo "</form>";
+}
+?>;
 
-        $deleteSql = "DELETE FROM library WHERE name = '$name'";
-        if (mysqli_query($conn, $deleteSql)) {
-            $message = "La bibliothèque \"$name\" a été supprimée avec succès.";
-        } else {
-            $erreur = "Erreur lors de la suppression de la bibliothèque : " . mysqli_error($conn);
-        }
-
-        mysqli_close($conn);
-    }
-
-    // Affichage du message de confirmation ou d'erreur
-    if (isset($message)) {
-        echo "<p>$message</p>";
-    } elseif (isset($erreur)) {
-        echo "<p>$erreur</p>";
-    }
-    ?>
-
-    <form action="index.php">
-        <input type="submit" value="Retour accueil" />
-    </form>
-</body>
-</html>
-
+<form action="index.php">
+    <input type="submit" value="Retour accueil" />
+</form>
+<?php include "footer"; ?>

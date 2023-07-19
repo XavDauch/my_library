@@ -6,7 +6,7 @@ include "db_connect.php";
 $id=$_GET['id'];
 // $query="SELECT * FROM "nom de la atable" WHERE id=$id";
 
-$query="SELECT * FROM authors WHERE id=:monidprotege";
+$query="SELECT * FROM books WHERE id=:monidprotege";
 
 // on va preparer la requete
 $statement = $pdo->prepare($query);

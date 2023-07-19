@@ -6,7 +6,7 @@
     <body>
         <h1>Modifier un livre</h1>
         <?php
-        $conn = mysqli_connect('localhost', 'root', '', 'mylibrary');
+        s
         if (!$conn) {
             die("La connexion à la base de données a échoué: " . mysqli_connect_error());
         }

@@ -6,7 +6,7 @@ include "db_connect.php";
 $id=$_GET['id'];
 // $query="SELECT * FROM "nom de la atable" WHERE id=$id";
 
-$query="SELECT * FROM authors WHERE id=:monidprotege";
+$query="SELECT * FROM library WHERE id=:monidprotege";
 
 // on va preparer la requete
 $statement = $pdo->prepare($query);
@@ -30,8 +30,8 @@ $friends = $statement->fetchAll();
 
 
 // affiche "vous avez cliquez sur le livre n 1."
-echo "Vous avez cliquez sur le livre n°".$unlivre['id'];
+echo "Vous avez cliquez sur la bibliotheque n°".$unlivre['id'];
 
-echo "<hr>titre : ".$unlivre['titre'];
+echo "<hr>titre : ".$unlivre['nom'];
   
  

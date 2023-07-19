@@ -1,5 +1,6 @@
 <?php
-include "header<.php"
+include "header<.php";
+include "db_connect.php"
 ?>
     <body>
         <style>
@@ -24,14 +25,9 @@ include "header<.php"
         </form>
         <?php
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
             $firstname = $_POST["firstname"];
             $lastname = $_POST["lastname"];
             $birth_place = $_POST["birth_place"];
-
-            $conn = mysqli_connect("localhost", "root", "", "mylibrary");
-            if (!$conn) {
-                die("Échec de la connexion à la base de données: " . mysqli_connect_error());
             }
 
             $sql = "INSERT INTO authors (firstname, lastname, birth_place) VALUES ('$firstname', '$lastname', '$birth_place')";
@@ -43,6 +39,6 @@ include "header<.php"
             }
 
             mysqli_close($conn);
-        }
+        
         ?>
 <?php include "footer"?>;

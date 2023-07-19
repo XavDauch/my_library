@@ -1,4 +1,11 @@
-$conn = mysqli_connect("localhost", "root", "", "mylibrary");
-            if (!$conn) {
-                die("Échec de la connexion à la base de données: " . mysqli_connect_error());
-            }
+<?php
+
+define('DSN', 'mysql:host=localhost;dbname=mylibrary');
+define('USER', 'root');
+define('PASS', '');
+
+// creer un objet permettant une connexion à la B.D. 
+$pdo = new \PDO(DSN, USER, PASS);
+
+?>
+

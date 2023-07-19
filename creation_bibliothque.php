@@ -1,5 +1,6 @@
 <?php
-include "header<.php"
+include "header<.php";
+include "db_connect.php"
 ?>
     <head>
         <h1>Création Bibliothèque</h1>
@@ -31,19 +32,7 @@ include "header<.php"
         </form>
 
             <?php
-            // Vérifier si le formulaire a été soumis
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                // Récupérer les données du formulaire
-                $name = $_POST["name"];
-                $address = $_POST["address"];
-                $location = $_POST["location"];
-                $pmrAccess = isset($_POST["pmr_access"]) ? 1 : 0;
-
-                $conn = mysqli_connect("localhost", "root", "", "mylibrary");
-                if (!$conn) {
-                    die("Échec de la connexion à la base de données: " . mysqli_connect_error());
-                }
-
+           
                 $sql = "INSERT INTO library (name, address, location, pmr_access) VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("sssi", $name, $address, $location, $pmrAccess);
@@ -56,6 +45,5 @@ include "header<.php"
                 // Fermer la connexion à la base de données
                 $stmt->close();
                 $conn->close();
-            }
             ?>
 <?php include "footer"?>;
